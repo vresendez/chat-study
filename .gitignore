@@ -1,0 +1,10 @@
+.env
+study.db
+*.db
+__pycache__/
+.venv/
+*.csv
+node_modules/
+frontend/node_modules/
+frontend/dist-check/
+.DS_Store
