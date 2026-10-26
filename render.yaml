@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: chat-study
+    runtime: docker
+    plan: starter            # no disk needed: data lives in the hosted Postgres database
+    envVars:
+      - key: POE_API_KEY
+        sync: false          # you type these in the Render dashboard; they are never in git
+      - key: DATABASE_URL
+        sync: false          # Postgres connection string from Supabase / Neon
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_TOKEN
+        generateValue: true  # view it later in the dashboard under Environment
+      - key: HTTPS_ONLY
+        value: "1"
+      - key: DAILY_LIMIT
+        value: "100"
+      # LimeSurvey auto-registration (optional)
+      - key: LS_RPC_URL
+        sync: false
+      - key: LS_USER
+        sync: false
+      - key: LS_PASSWORD
+        sync: false
+      - key: LS_SURVEY_ID
+        sync: false

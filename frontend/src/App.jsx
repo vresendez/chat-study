@@ -36,23 +36,40 @@ const Icon = {
 };
 
 function Login({ onDone }) {
-  const [identifier, setIdentifier] = useState("");
-  const [consent, setConsent] = useState(false);
+  // Participants arriving from LimeSurvey: https://SITE/?pid=<their ID>[&consent=1]
+  const [link] = useState(() => {
+    const p = new URLSearchParams(window.location.search);
+    return { id: p.get("pid") || p.get("code") || "", consent: p.get("consent") === "1" };
+  });
+  const [identifier, setIdentifier] = useState(link.id);
+  const [consent, setConsent] = useState(link.consent);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
-  async function submit(e) {
-    e.preventDefault();
+  async function doLogin(id, agreed) {
     setError("");
     setBusy(true);
     try {
-      await api.login(identifier, consent);
+      await api.login(id, agreed);
       onDone();
     } catch (err) {
       setError(err.message);
     } finally {
       setBusy(false);
     }
+  }
+
+  useEffect(() => {
+    if (!link.id) return;
+    // keep the participant ID out of the address bar and browser history
+    window.history.replaceState({}, "", window.location.pathname);
+    // if the survey already collected consent, continue straight into the chat
+    if (link.consent) doLogin(link.id, true);
+  }, []);
+
+  function submit(e) {
+    e.preventDefault();
+    doLogin(identifier, consent);
   }
 
   return (
